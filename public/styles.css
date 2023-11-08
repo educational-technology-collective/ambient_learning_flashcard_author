@@ -22,7 +22,7 @@ body {
     background-color: var(--teal);
 }
 
-input {
+input[type="text"], input[type="number"] {
     all: unset;
 }
 
@@ -123,6 +123,30 @@ button:focus {
     margin: 2rem 0 0;
     padding: 1rem;
     box-shadow: var(--out-box);
+    position: relative;
+}
+
+#filter-container {
+    position: absolute;
+    transform: translate(-0.5rem,calc(-100% - 1rem));
+}
+
+#filter-container button {
+    margin: 0 1px;
+    border-radius: 2px;
+    box-shadow: none;
+    border-right: 2px solid black;
+    border-left: 2px solid rgba(255, 255, 255, 0.5);
+    border-top: 2px solid rgba(255, 255, 255, 0.5);
+
+}
+
+.tab {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 3px 0 0 var(--d-grey) !important;
+
+
 }
 
 #answers-container {
@@ -187,6 +211,12 @@ input[type="radio"]:checked::before {
     width: 100%;
     display: flex;
     justify-content: flex-end;
+}
+
+#question-verified {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
 }
 
 #buttons-card-nav {

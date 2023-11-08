@@ -3,47 +3,19 @@ import { getCards } from './utils/getCards'
 import { deleteCard } from './utils/deleteCard'
 import { updateCard } from './utils/updateCard'
 import { verifyUser } from './utils/verifyUser'
+import { xsvg, check } from './utils/svgs'
 
-const cardSchema = {
-    "_id": {
-      "$oid": "65428ec11a8e75c201146485"
-    },
-    "content": {
-      "question": "What is the purpose of the machine learning exploration described in the text?",
-      "answer": [
-        {
-          "option": "To build a complex object recognition system",
-          "isCorrect": false
-        },
-        {
-          "option": "To train a classifier to distinguish between different types of fruit",
-          "isCorrect": true
-        },
-        {
-          "option": "To simulate features for instructional purposes",
-          "isCorrect": false
-        },
-        {
-          "option": "To create a dataset for fruit prediction",
-          "isCorrect": false
-        }
-      ]
-    },
-    "kc": "siads542/An Example Machine Learning Problem/Moment 1",
-    "lm_id": {
-      "$oid": "654293151a8e75c2011ec240"
-    },
-    "source": "kevynct:ChatGPT gpt-3.5-turbo",
-    "type": "mcq",
-    "visibility": "development"
-  }
-
-const Question = ({ card, handleDeleteCard, handleUpdateCard, changeIsCorrect, changeQuestion, changeAnswer }) => {
+const Question = ({ card, handleDeleteCard, handleUpdateCard, handleVerifyFilter, show, changeIsCorrect, changeQuestion, changeAnswer }) => {
 
     const letter = ['A', 'B', 'C', 'D']
     return(
         <div id='question-container'>
             <div id='question-wrapper'>
+                <div id='filter-container'>
+                    <button id='filter-all' className={show === 'all' ? 'tab' : ''} onClick={() => handleVerifyFilter('all')}>All</button>
+                    <button id='filter-verified' className={show === 'verified' ? 'tab' : ''} onClick={() => handleVerifyFilter('verified')}>Verified</button>
+                    <button id='filter-unverified' className={show === 'unverified' ? 'tab' : ''} onClick={() => handleVerifyFilter('unverified')}>Unverified</button>
+                </div>
                 <label id='question'>Question
                     <textarea 
                         id='question-textarea'
@@ -79,6 +51,9 @@ const Question = ({ card, handleDeleteCard, handleUpdateCard, changeIsCorrect, c
                     </div>
                 </div>
                 <div id='question-buttons'>
+                    <label id='question-verified'>Verified:
+                        {card.verified ? check : xsvg}
+                    </label>
                     <button id='question-update' onClick={() => handleUpdateCard(card._id)}>Update</button>
                     <button id='question-delete' onClick={() => handleDeleteCard(card._id)}>Delete</button>
                 </div>
@@ -91,6 +66,8 @@ const Question = ({ card, handleDeleteCard, handleUpdateCard, changeIsCorrect, c
 const App = () => {
 
     const [cards, setCards] = useState([])
+    const [filteredCards, setFilteredCards] = useState([])
+    const [show, setShow] = useState('all')
     const [index, setIndex] = useState(0)
     const [user, setUser] = useState('')
     const [auth, setAuth] = useState('')
@@ -104,13 +81,35 @@ const App = () => {
     const kc = cards[index] ? cards[index].kc : ''
     const header = kc.split('/').slice(1).join(' > ')
 
+    const handleVerifyFilter = (filter) => {
+        setShow(filter)
+    }
+
+    useEffect(() => {
+        if (show === 'all') {
+            setFilteredCards(cards)
+        } else if (show === 'verified') {
+            setFilteredCards(cards.filter(card => card.verified))
+        } else if (show === 'unverified') {
+            setFilteredCards(cards.filter(card => !card.verified))
+        }
+    }, [show, cards])
+
     const handleDeleteCard = (id) => {
         setCards(cards.filter(card => card._id !== id))
         deleteCard(id)
     }
 
     const handleUpdateCard = (id) => {
-        updateCard(id, cards[index], auth)
+        let verifiedCard = cards[index];
+        verifiedCard.verified = true;
+        setCards(cards.map(card => {
+            if (card._id === id) {
+                card.verified = true
+            }
+            return card
+        }));
+        updateCard(id, verifiedCard, auth)
     }
 
     const handleVerifyUser = () => {
@@ -168,19 +167,82 @@ const App = () => {
         setIndex(e.target.value - 1)
     }
 
-    return(
+    if (show === 'verified') {
+        return(
+            <div id='container'>
+                <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
+                <label id='user-label'>User: 
+                    <input id='user-input' type='text' onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
+                    <button id='user-button' onClick={handleVerifyUser} >Verify</button>
+                </label>
+                
+                <Question 
+                    card={filteredCards[index]} 
+                    handleDeleteCard={handleDeleteCard}
+                    handleUpdateCard={handleUpdateCard}
+                    handleVerifyFilter={handleVerifyFilter}
+                    show={show}
+                    changeIsCorrect={changeIsCorrect}
+                    changeQuestion={changeQuestion}
+                    changeAnswer={changeAnswer}
+                />
+                <div id='buttons-card-nav'>
+                    <button id='button-card-prev' onClick={() => setIndex(index - 1)} disabled={index === 0}>Previous</button>
+                    <div id='card-index'>
+                        <input id='card-index-current'  type='text'  onChange={manuallyChangeIndex} value={index + 1} />
+                        of
+                        <div id='card-index-total'>{filteredCards.length}</div>
+                    </div>
+                    <button id='button-card-next' onClick={() => setIndex(index + 1)} disabled={index === filteredCards.length - 1}>Next</button>
+                </div>
+            </div>
+        )
+    } else if (show === 'unverified') {
+        return(
+            <div id='container'>
+                <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
+                <label id='user-label'>User: 
+                    <input id='user-input'  type='text'  onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
+                    <button id='user-button' onClick={handleVerifyUser} >Verify</button>
+                </label>
+                
+                <Question 
+                    card={filteredCards[index]} 
+                    handleDeleteCard={handleDeleteCard}
+                    handleUpdateCard={handleUpdateCard}
+                    handleVerifyFilter={handleVerifyFilter}
+                    show={show}
+                    changeIsCorrect={changeIsCorrect}
+                    changeQuestion={changeQuestion}
+                    changeAnswer={changeAnswer}
+                />
+                <div id='buttons-card-nav'>
+                    <button id='button-card-prev' onClick={() => setIndex(index - 1)} disabled={index === 0}>Previous</button>
+                    <div id='card-index'>
+                        <input id='card-index-current'  type='text'  onChange={manuallyChangeIndex} value={index + 1} />
+                        of
+                        <div id='card-index-total'>{filteredCards.length}</div>
+                    </div>
+                    <button id='button-card-next' onClick={() => setIndex(index + 1)} disabled={index === filteredCards.length - 1}>Next</button>
+                </div>
+            </div>
+        )
+    } else return(
         <div id='container'>
             {cards.length > 0 ? (
                 <>
                     <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
                     <label id='user-label'>User: 
-                        <input id='user-input' onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
+                        <input id='user-input'  type='text'  onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
                         <button id='user-button' onClick={handleVerifyUser} >Verify</button>
                     </label>
+                    
                     <Question 
                         card={cards[index]} 
                         handleDeleteCard={handleDeleteCard}
                         handleUpdateCard={handleUpdateCard}
+                        handleVerifyFilter={handleVerifyFilter}
+                        show={show}
                         changeIsCorrect={changeIsCorrect}
                         changeQuestion={changeQuestion}
                         changeAnswer={changeAnswer}
@@ -188,7 +250,7 @@ const App = () => {
                     <div id='buttons-card-nav'>
                         <button id='button-card-prev' onClick={() => setIndex(index - 1)} disabled={index === 0}>Previous</button>
                         <div id='card-index'>
-                            <input id='card-index-current' onChange={manuallyChangeIndex} value={index + 1} />
+                            <input id='card-index-current' type='text'  onChange={manuallyChangeIndex} value={index + 1} />
                             of
                             <div id='card-index-total'>{cards.length}</div>
                         </div>
