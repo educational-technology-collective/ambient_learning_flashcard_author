@@ -5,6 +5,20 @@ import { updateCard } from './utils/updateCard'
 import { verifyUser } from './utils/verifyUser'
 import { xsvg, check } from './utils/svgs'
 
+const emptyCard = {
+    kc: '',
+    content: {
+        question: '',
+        answer: [
+            { option: '', isCorrect: false },
+            { option: '', isCorrect: false },
+            { option: '', isCorrect: false },
+            { option: '', isCorrect: false }
+        ]
+    },
+    verified: false
+}
+
 const Question = ({ card, handleDeleteCard, handleUpdateCard, handleVerifyFilter, show, changeIsCorrect, changeQuestion, changeAnswer }) => {
 
     const letter = ['A', 'B', 'C', 'D']
@@ -83,6 +97,7 @@ const App = () => {
 
     const handleVerifyFilter = (filter) => {
         setShow(filter)
+        setIndex(0)
     }
 
     useEffect(() => {
@@ -167,7 +182,14 @@ const App = () => {
         setIndex(e.target.value - 1)
     }
 
-    if (show === 'verified') {
+    useEffect(() => {
+        if (filteredCards.length === 0) {
+            setIndex(0)
+            setShow('all')
+        }
+    }, [filteredCards])
+
+    if (show === 'verified' && filteredCards.length !== 0) {
         return(
             <div id='container'>
                 <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
@@ -197,7 +219,7 @@ const App = () => {
                 </div>
             </div>
         )
-    } else if (show === 'unverified') {
+    } else if (show === 'unverified'  && filteredCards.length !== 0) {
         return(
             <div id='container'>
                 <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
