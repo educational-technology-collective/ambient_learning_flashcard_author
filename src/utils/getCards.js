@@ -4,3 +4,5 @@ export const getCards = async () => {
     
     return cards;
 }
+// 'http://localhost:5000/cards'
+// 'https://a97mj46gc1.execute-api.us-east-1.amazonaws.com/dev/authoring/fcs'

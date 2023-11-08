@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getCards } from './utils/getCards'
+import { deleteCard } from './utils/deleteCard'
+import { updateCard } from './utils/updateCard'
 
 const cardSchema = {
     "_id": {
@@ -35,6 +37,56 @@ const cardSchema = {
     "visibility": "development"
   }
 
+const Question = ({ card, handleDeleteCard, handleUpdateCard, changeIsCorrect, changeQuestion, changeAnswer }) => {
+
+    const letter = ['A', 'B', 'C', 'D']
+    return(
+        <div id='question-container'>
+            <div id='question-wrapper'>
+                <label id='question'>Question
+                    <textarea 
+                        id='question-textarea'
+                        value={card.content.question}
+                        onChange={(e) => changeQuestion(e, card._id, e.target.value)}
+                    />
+                </label>
+                <div id='answers-container'>
+                    <div id='answers-header'>
+                        <div >Answers</div>
+                        <div>Correct Answer</div>
+                    </div>
+                    <div id='answers-map'>
+                {card.content.answer.map((answer, i) => {
+                    const answerLabel = `answer-${letter[i]}`
+                    return (
+                        <div 
+                            id={answerLabel}
+                            key={`${card._id}${i}`}>
+                            
+                            <label className='answer-label'> {letter[i]}:
+                                <textarea 
+                                onChange={(e) => changeAnswer(e, card._id, answer.option)}
+                                value={answer.option} />
+                                <input
+                                    type="radio" 
+                                    name="answer" 
+                                    checked={answer.isCorrect} 
+                                    onChange={() => changeIsCorrect(card._id, answer.option)} />
+                            </label>
+                        </div>
+                    )})}
+                    </div>
+                </div>
+                <div id='question-buttons'>
+                    <button id='question-update' onClick={() => handleUpdateCard(card._id)}>Update</button>
+                    <button id='question-delete' onClick={() => handleDeleteCard(card._id)}>Delete</button>
+                </div>
+
+            </div>
+        </div>
+    )
+}
+
 const App = () => {
 
     const [cards, setCards] = useState([])
@@ -43,13 +95,19 @@ const App = () => {
     useEffect(() => {
         getCards().then(cards => {
             setCards(cards)
-            setIndex(cards.length - 1)
+            setIndex(0)
         })
     }, [])
+    const kc = cards[index] ? cards[index].kc : ''
+    const header = kc.split('/').slice(1).join(' > ')
 
-    const deleteCard = (id) => {
+    const handleDeleteCard = (id) => {
         setCards(cards.filter(card => card._id !== id))
-        setIndex(index - 1)
+        deleteCard(id)
+    }
+
+    const handleUpdateCard = (id) => {
+        updateCard(id, cards[index])
     }
 
     const changeIsCorrect = (id, answerText) => {
@@ -91,35 +149,34 @@ const App = () => {
         }))
     }
 
-
+    const manuallyChangeIndex = (e) => {
+        if (e.target.value > cards.length || e.target.value < 1 || isNaN(e.target.value)) return
+        setIndex(e.target.value - 1)
+    }
 
     return(
-        <div>
+        <div id='container'>
             {cards.length > 0 ? (
-                <div>
-                    <textarea 
-                        value={cards[index].content.question}
-                        onChange={(e) => changeQuestion(e, cards[index]._id, e.target.value)}
-                    
+                <>
+                    <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
+                    <Question 
+                        card={cards[index]} 
+                        handleDeleteCard={handleDeleteCard}
+                        handleUpdateCard={handleUpdateCard}
+                        changeIsCorrect={changeIsCorrect}
+                        changeQuestion={changeQuestion}
+                        changeAnswer={changeAnswer}
                     />
-                    {cards[index].content.answer.map((answer, i) => (
-                        <div key={`${cards[index]._id}${i}`}>
-                            
-                            <div style={{display: 'flex', boxShadow: `0 0 2px 2px ${answer.isCorrect ? 'green': 'black'}`, margin: '10px 0'}}>
-                                <input
-                                    type="radio" 
-                                    name="answer" 
-                                    checked={answer.isCorrect} 
-                                    onChange={() => changeIsCorrect(cards[index]._id, answer.option)} />
-                                <textarea 
-                                onChange={(e) => changeAnswer(e, cards[index]._id, answer.option)}
-                                value={answer.option} />
-                            </div>
+                    <div id='buttons-card-nav'>
+                        <button id='button-card-prev' onClick={() => setIndex(index - 1)} disabled={index === 0}>Previous</button>
+                        <div id='card-index'>
+                            <input id='card-index-current' onChange={manuallyChangeIndex} value={index + 1} />
+                            of
+                            <div id='card-index-total'>{cards.length}</div>
                         </div>
-                    ))}
-                    <button onClick={() => deleteCard(cards[index]._id)}>Delete</button>
-                    <button onClick={() => setIndex(index - 1)}>Next</button>
-                </div>
+                        <button id='button-card-next' onClick={() => setIndex(index + 1)} disabled={index === cards.length - 1}>Next</button>
+                    </div>
+                </>
             ) : (
                 <h1>Loading...</h1>
             )}
