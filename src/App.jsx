@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { getCards } from './utils/getCards'
 import { deleteCard } from './utils/deleteCard'
 import { updateCard } from './utils/updateCard'
+import { verifyUser } from './utils/verifyUser'
 
 const cardSchema = {
     "_id": {
@@ -91,6 +92,8 @@ const App = () => {
 
     const [cards, setCards] = useState([])
     const [index, setIndex] = useState(0)
+    const [user, setUser] = useState('')
+    const [auth, setAuth] = useState('')
 
     useEffect(() => {
         getCards().then(cards => {
@@ -107,7 +110,18 @@ const App = () => {
     }
 
     const handleUpdateCard = (id) => {
-        updateCard(id, cards[index])
+        updateCard(id, cards[index], auth)
+    }
+
+    const handleVerifyUser = () => {
+        verifyUser(user)
+            .then(res => {
+                if (res.auth) {
+                    setAuth(res.auth)
+                } else {
+                    alert('User not found')
+                }
+            })
     }
 
     const changeIsCorrect = (id, answerText) => {
@@ -159,6 +173,10 @@ const App = () => {
             {cards.length > 0 ? (
                 <>
                     <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
+                    <label id='user-label'>User: 
+                        <input id='user-input' onChange={(e) => setUser(e.target.value)} value={user} />
+                        <button id='user-button' onClick={handleVerifyUser} >Verify</button>
+                    </label>
                     <Question 
                         card={cards[index]} 
                         handleDeleteCard={handleDeleteCard}
