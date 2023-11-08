@@ -174,7 +174,7 @@ const App = () => {
                 <>
                     <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
                     <label id='user-label'>User: 
-                        <input id='user-input' onChange={(e) => setUser(e.target.value)} value={user} />
+                        <input id='user-input' onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
                         <button id='user-button' onClick={handleVerifyUser} >Verify</button>
                     </label>
                     <Question 
