@@ -19,7 +19,7 @@ const emptyCard = {
     verified: false
 }
 
-const Question = ({ card, handleDeleteCard, handleUpdateCard, handleVerifyFilter, show, changeIsCorrect, changeQuestion, changeAnswer }) => {
+const Question = ({ card, handleDeleteCard, handleUpdateCard, handleVerifyFilter, show, auth, changeIsCorrect, changeQuestion, changeAnswer }) => {
 
     const letter = ['A', 'B', 'C', 'D']
     return(
@@ -68,8 +68,8 @@ const Question = ({ card, handleDeleteCard, handleUpdateCard, handleVerifyFilter
                     <label id='question-verified'>Verified:
                         {card.verified ? check : xsvg}
                     </label>
-                    <button id='question-update' onClick={() => handleUpdateCard(card._id)}>Update</button>
-                    <button id='question-delete' onClick={() => handleDeleteCard(card._id)}>Delete</button>
+                    <button id='question-update' onClick={() => handleUpdateCard(card._id)} disabled={auth === '' ? true : false} >Update</button>
+                    <button id='question-delete' onClick={() => handleDeleteCard(card._id)} disabled={auth === '' ? true : false} >Delete</button>
                 </div>
 
             </div>
@@ -113,6 +113,9 @@ const App = () => {
     const handleDeleteCard = (id) => {
         setCards(cards.filter(card => card._id !== id))
         deleteCard(id)
+        if (index === cards.length - 1) {
+            setIndex(index - 1)
+        }
     }
 
     const handleUpdateCard = (id) => {
@@ -204,6 +207,7 @@ const App = () => {
                     handleUpdateCard={handleUpdateCard}
                     handleVerifyFilter={handleVerifyFilter}
                     show={show}
+                    auth={auth}
                     changeIsCorrect={changeIsCorrect}
                     changeQuestion={changeQuestion}
                     changeAnswer={changeAnswer}
@@ -234,6 +238,7 @@ const App = () => {
                     handleUpdateCard={handleUpdateCard}
                     handleVerifyFilter={handleVerifyFilter}
                     show={show}
+                    auth={auth}
                     changeIsCorrect={changeIsCorrect}
                     changeQuestion={changeQuestion}
                     changeAnswer={changeAnswer}
@@ -265,6 +270,7 @@ const App = () => {
                         handleUpdateCard={handleUpdateCard}
                         handleVerifyFilter={handleVerifyFilter}
                         show={show}
+                        auth={auth}
                         changeIsCorrect={changeIsCorrect}
                         changeQuestion={changeQuestion}
                         changeAnswer={changeAnswer}
