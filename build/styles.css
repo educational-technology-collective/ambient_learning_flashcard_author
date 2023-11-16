@@ -213,6 +213,12 @@ input[type="radio"]:checked::before {
     justify-content: flex-end;
 }
 
+#question-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+}
+
 #question-verified {
     margin-right: auto;
     display: flex;

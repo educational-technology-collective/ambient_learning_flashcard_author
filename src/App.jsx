@@ -4,6 +4,7 @@ import { deleteCard } from './utils/deleteCard'
 import { updateCard } from './utils/updateCard'
 import { verifyUser } from './utils/verifyUser'
 import { xsvg, check } from './utils/svgs'
+import { scribe } from './utils/scribeTutorial'
 
 const emptyCard = {
     kc: '',
@@ -66,7 +67,11 @@ const Question = ({ card, handleDeleteCard, handleUpdateCard, handleVerifyFilter
                 </div>
                 <div id='question-buttons'>
                     <label id='question-verified'>Verified:
-                        {card.verified ? check : xsvg}
+                        <div id='verified-slider' >
+                            {check}
+                            <div id='verified-slider-switch' onClick={() => handleUpdateCard(card._id)} style={card.verified ? {transform: 'translateX(100%) '}: {transform: 'translateX(0)'}} />
+                            {xsvg}
+                        </div>
                     </label>
                     <button id='question-update' onClick={() => handleUpdateCard(card._id)} disabled={auth === '' ? true : false} >Update</button>
                     <button id='question-delete' onClick={() => handleDeleteCard(card._id)} disabled={auth === '' ? true : false} >Delete</button>
@@ -85,6 +90,7 @@ const App = () => {
     const [index, setIndex] = useState(0)
     const [user, setUser] = useState('')
     const [auth, setAuth] = useState('')
+    const [tutorial, setTutorial] = useState(false)
 
     useEffect(() => {
         getCards().then(cards => {
@@ -185,6 +191,15 @@ const App = () => {
         setIndex(e.target.value - 1)
     }
 
+    const openTutorial = () => {
+        setTutorial(true)
+    }
+
+    const closeTutorial = (e) => {
+        if (e.target.id !== 'scribe') return
+        setTutorial(false)
+    }
+
     useEffect(() => {
         if (filteredCards.length === 0) {
             setIndex(0)
@@ -195,10 +210,12 @@ const App = () => {
     if (show === 'verified' && filteredCards.length !== 0) {
         return(
             <div id='container'>
+                {tutorial ? scribe(closeTutorial) : null}
                 <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
                 <label id='user-label'>User: 
                     <input id='user-input' type='text' onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
                     <button id='user-button' onClick={handleVerifyUser} >Verify</button>
+                    <button id='tutorial-button' onClick={openTutorial}>How to Use</button>
                 </label>
                 
                 <Question 
@@ -226,10 +243,12 @@ const App = () => {
     } else if (show === 'unverified'  && filteredCards.length !== 0) {
         return(
             <div id='container'>
+                {tutorial ? scribe(closeTutorial) : null}
                 <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
                 <label id='user-label'>User: 
                     <input id='user-input'  type='text'  onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
                     <button id='user-button' onClick={handleVerifyUser} >Verify</button>
+                    <button id='tutorial-button' onClick={openTutorial}>How to Use</button>
                 </label>
                 
                 <Question 
@@ -256,12 +275,14 @@ const App = () => {
         )
     } else return(
         <div id='container'>
+            {tutorial ? scribe(closeTutorial) : null}
             {cards.length > 0 ? (
                 <>
                     <h4 id='card-header'>SIADS 542 {` > ${header}`}</h4>
                     <label id='user-label'>User: 
                         <input id='user-input'  type='text'  onChange={(e) => setUser(e.target.value)} value={user} placeholder='uniqname' />
                         <button id='user-button' onClick={handleVerifyUser} >Verify</button>
+                        <button id='tutorial-button' onClick={openTutorial}>How to Use<span >?</span></button>
                     </label>
                     
                     <Question 

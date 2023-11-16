@@ -78,6 +78,27 @@ button:focus {
     padding: 0 0.5rem;
 }
 
+#scribe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    place-content: center;
+    background-color: rgba(0, 0, 0, 0.704);
+    z-index: 1000;
+}
+
+#scribe * {
+    position: absolute;
+    width: max(50%, 540px);
+    height: max(80%, 680px);
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 #card-header {
     width: 94%;
     font-size: 0.9rem;
@@ -116,6 +137,27 @@ button:focus {
 
 #user-button {
     scale: 0.8;
+}
+
+#tutorial-button {
+    scale: 0.8;
+    margin-left: auto;
+    display: flex;
+}
+
+#tutorial-button:hover {
+    cursor: pointer;
+}
+
+#tutorial-button span {
+    display: grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    font-size: 1.2rem;
+    border: 1px solid black;
+    border-radius: 50%;
+    margin-left: 2px;
 }
 
 #question-container {
@@ -216,7 +258,6 @@ input[type="radio"]:checked::before {
 #question-buttons button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-
 }
 
 #question-verified {
@@ -224,6 +265,43 @@ input[type="radio"]:checked::before {
     display: flex;
     align-items: center;
 }
+
+#verified-slider {
+    margin-left: 5px;
+    display: flex;
+    width: 64px;
+    height: 24px;
+    background-color: var(--white);
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: var(--in-box);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+#verified-slider-switch {
+    width: 50%;
+    height: calc(100% - 4px);
+    transform: translateX(0%);
+    background-color: #e3c793;
+    position: absolute;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 0 0 1px black;
+    border-top-left-radius: 11px;
+    border-bottom-left-radius: 11px;
+    border-top-right-radius: 11px;
+    border-bottom-right-radius: 11px;
+}
+
+
+#verified-slider-switch:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0 2px var(--pink);
+}
+
 
 #buttons-card-nav {
     width: 100%;
@@ -236,6 +314,8 @@ input[type="radio"]:checked::before {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
 
 button:active {
     box-shadow: var(--in-box);

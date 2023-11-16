@@ -3,3 +3,6 @@ export const getCards = async () => {
     
     return cards;
 }
+
+//
+///http://localhost:5000/cards
