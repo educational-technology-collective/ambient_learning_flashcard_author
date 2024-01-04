@@ -118,6 +118,7 @@ button:focus {
     width: 90%;
 }
 
+
 #user-input {
     width: 100px;
     height: 2rem;
@@ -196,6 +197,14 @@ button:focus {
     position: relative;
 }
 
+.answers-container-qa {
+    height: 470px;
+}
+
+.answers-container-qa textarea {
+    height: 400px;
+}
+
 #answers-container::before {
     content: "";
     position: absolute;
@@ -216,6 +225,10 @@ button:focus {
     font-weight: 400;
     margin: 1rem 0;
 
+}
+
+#answer-textarea-qa {
+    height: 640px;
 }
 
 
